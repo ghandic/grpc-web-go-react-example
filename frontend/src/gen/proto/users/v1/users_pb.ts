@@ -11,9 +11,9 @@ import { Message, proto3 } from "@bufbuild/protobuf";
  */
 export class User extends Message<User> {
   /**
-   * @generated from field: string id = 1;
+   * @generated from field: int32 id = 1;
    */
-  id = "";
+  id = 0;
 
   /**
    * @generated from field: string name = 2;
@@ -28,7 +28,7 @@ export class User extends Message<User> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "users.v1.User";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
     { no: 2, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
@@ -54,9 +54,9 @@ export class User extends Message<User> {
  */
 export class GetUserRequest extends Message<GetUserRequest> {
   /**
-   * @generated from field: string user_id = 1;
+   * @generated from field: int32 user_id = 1;
    */
-  userId = "";
+  userId = 0;
 
   constructor(data?: PartialMessage<GetUserRequest>) {
     super();
@@ -66,7 +66,7 @@ export class GetUserRequest extends Message<GetUserRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "users.v1.GetUserRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "user_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "user_id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetUserRequest {
@@ -270,9 +270,9 @@ export class ListUsersResponse extends Message<ListUsersResponse> {
  */
 export class DeleteUserRequest extends Message<DeleteUserRequest> {
   /**
-   * @generated from field: string user_id = 1;
+   * @generated from field: int32 user_id = 1;
    */
-  userId = "";
+  userId = 0;
 
   constructor(data?: PartialMessage<DeleteUserRequest>) {
     super();
@@ -282,7 +282,7 @@ export class DeleteUserRequest extends Message<DeleteUserRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "users.v1.DeleteUserRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "user_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "user_id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): DeleteUserRequest {

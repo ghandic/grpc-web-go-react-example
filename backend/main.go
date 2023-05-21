@@ -12,7 +12,8 @@ import (
 
 	"github.com/ghandic/grpc-web-go-react-example/backend/gen/proto/users/v1/usersv1connect"
 	"github.com/ghandic/grpc-web-go-react-example/backend/users"
-	pgx "github.com/jackc/pgx/v5"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/cors"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -57,19 +58,29 @@ func newCORS() *cors.Cors {
 	})
 }
 
-func main() {
-
-	mux := http.NewServeMux()
-
-	conn, err := pgx.Connect(context.Background(), "postgres://postgres:postgres@localhost:5432")
+func getPGPool() *pgxpool.Pool {
+	conf, err := pgxpool.ParseConfig("postgres://postgres:postgres@localhost:5432/postgres")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
 	}
-	defer conn.Close(context.Background())
+	pool, err := pgxpool.NewWithConfig(context.Background(), conf)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+	return pool
+}
+
+func main() {
+
+	mux := http.NewServeMux()
+
+	pool := getPGPool()
+	defer pool.Close()
 
 	userService := &users.UserService{
-		Conn: conn,
+		Pool: pool,
 	}
 	path, handler := usersv1connect.NewUserServiceHandler(userService)
 	mux.Handle(path, handler)
