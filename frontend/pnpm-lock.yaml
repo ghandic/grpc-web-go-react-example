@@ -1,6 +1,10 @@
 lockfileVersion: 5.3
 
 specifiers:
+  '@bufbuild/connect-query': ^0.2.1
+  '@bufbuild/connect-web': ^0.9.0
+  '@bufbuild/protobuf': ^1.2.0
+  '@tanstack/react-query': ^4.29.7
   '@types/react': ^18.0.28
   '@types/react-dom': ^18.0.11
   '@typescript-eslint/eslint-plugin': ^5.57.1
@@ -15,6 +19,10 @@ specifiers:
   vite: ^4.3.2
 
 dependencies:
+  '@bufbuild/connect-query': 0.2.1_8a7b6f2992fa5e3ab34ee8541ebc4b6a
+  '@bufbuild/connect-web': 0.9.0_@bufbuild+protobuf@1.2.0
+  '@bufbuild/protobuf': 1.2.0
+  '@tanstack/react-query': 4.29.7_react-dom@18.2.0+react@18.2.0
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
 
@@ -257,6 +265,94 @@ packages:
       '@babel/helper-validator-identifier': 7.19.1
       to-fast-properties: 2.0.0
     dev: true
+
+  /@bufbuild/connect-query/0.2.1_8a7b6f2992fa5e3ab34ee8541ebc4b6a:
+    resolution: {integrity: sha512-0YmAjvXzvHxRkSa4lrmd9lcLtPiVYrARkSclCpOLzVTgAvOKNkoJ6T88yEF5zGJST3Sa46t0hePeiQGSL99bPg==}
+    peerDependencies:
+      '@tanstack/react-query': ^4.20.4
+      react: ^18.2.0
+      react-dom: ^18.2.0
+    dependencies:
+      '@bufbuild/connect': 0.8.6_@bufbuild+protobuf@1.2.0
+      '@bufbuild/connect-web': 0.8.6_@bufbuild+protobuf@1.2.0
+      '@bufbuild/protobuf': 1.2.0
+      '@bufbuild/protoc-gen-connect-web': 0.8.6_@bufbuild+connect@0.8.6
+      '@tanstack/react-query': 4.29.7_react-dom@18.2.0+react@18.2.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      stable-hash: 0.0.3
+    transitivePeerDependencies:
+      - '@bufbuild/protoc-gen-es'
+      - supports-color
+    dev: false
+
+  /@bufbuild/connect-web/0.8.6_@bufbuild+protobuf@1.2.0:
+    resolution: {integrity: sha512-+ZI7Ercc0X1vlQr1iHa35EymtFjq1x4rByE+ToNyw05mwB7yxk4nw4iUa/Z7PfHYba1dAcgnnrvRDI2K7TBPBQ==}
+    peerDependencies:
+      '@bufbuild/protobuf': ^1.2.0
+    dependencies:
+      '@bufbuild/connect': 0.8.6_@bufbuild+protobuf@1.2.0
+      '@bufbuild/protobuf': 1.2.0
+    dev: false
+
+  /@bufbuild/connect-web/0.9.0_@bufbuild+protobuf@1.2.0:
+    resolution: {integrity: sha512-WyYWjPRWceUc/1d5n8oA1NcCni2ND6qj8iXd1Hqy6qkCyo2n/FUSSe3oQuoXYZ9KCUI+5qexHz46n2jtzmFDiQ==}
+    peerDependencies:
+      '@bufbuild/protobuf': ^1.2.0
+    dependencies:
+      '@bufbuild/connect': 0.9.0_@bufbuild+protobuf@1.2.0
+      '@bufbuild/protobuf': 1.2.0
+    dev: false
+
+  /@bufbuild/connect/0.8.6_@bufbuild+protobuf@1.2.0:
+    resolution: {integrity: sha512-z9gW4hcQxCz7w0kjt1JyMp7VEQQdm7CYiZHvNq4vZtMbKOje2DC8kSb62XStHHd3AdoDZq1cb1s11F5TMSwZYw==}
+    peerDependencies:
+      '@bufbuild/protobuf': ^1.2.0
+    dependencies:
+      '@bufbuild/protobuf': 1.2.0
+    dev: false
+
+  /@bufbuild/connect/0.9.0_@bufbuild+protobuf@1.2.0:
+    resolution: {integrity: sha512-UGOapHlbdbXW9Os08plEuR2k3ZwFWni3BnYVSEPITDTjgEqTagbm6lNWurXM53FDPvueSYYTTJF3Rivhp03xbQ==}
+    peerDependencies:
+      '@bufbuild/protobuf': ^1.2.0
+    dependencies:
+      '@bufbuild/protobuf': 1.2.0
+    dev: false
+
+  /@bufbuild/protobuf/1.2.0:
+    resolution: {integrity: sha512-MBVuQMOBHxgGnZ9XCUIi8WOy5O/T4ma3TduCRhRvndv3UDbG9cHgd8h6nOYSGyBYPEvXf1z9nTwhp8mVIDbq2g==}
+    dev: false
+
+  /@bufbuild/protoc-gen-connect-web/0.8.6_@bufbuild+connect@0.8.6:
+    resolution: {integrity: sha512-BltKOzGONR8uGlGdjgZnMBqudNEcRgF75XcttfyyZJsKPsknivFrMSoSlI6ZUyR+TQ567vJDxKKGO4bukQiBWA==}
+    engines: {node: '>=14'}
+    hasBin: true
+    peerDependencies:
+      '@bufbuild/connect': 0.8.6
+      '@bufbuild/protoc-gen-es': ^1.2.0
+    peerDependenciesMeta:
+      '@bufbuild/connect':
+        optional: true
+      '@bufbuild/protoc-gen-es':
+        optional: true
+    dependencies:
+      '@bufbuild/connect': 0.8.6_@bufbuild+protobuf@1.2.0
+      '@bufbuild/protobuf': 1.2.0
+      '@bufbuild/protoplugin': 1.2.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /@bufbuild/protoplugin/1.2.0:
+    resolution: {integrity: sha512-TX0mEk+LdIbpK2xr5RqeUswR8jGZs6uCX6Cq8azADj8hhiUr7Xty8agEOU/zR+J71D4dV5SnyEPYyw0nGJ6dGQ==}
+    dependencies:
+      '@bufbuild/protobuf': 1.2.0
+      '@typescript/vfs': 1.4.0
+      typescript: 4.5.2
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
 
   /@esbuild/android-arm/0.17.19:
     resolution: {integrity: sha512-rIKddzqhmav7MSmoFCmDIb6e2W57geRsM94gV2l38fzhXMwq7hZoClug9USI2pFRGL06f4IOPHHpFNOkWieR8A==}
@@ -568,6 +664,28 @@ packages:
       fastq: 1.15.0
     dev: true
 
+  /@tanstack/query-core/4.29.7:
+    resolution: {integrity: sha512-GXG4b5hV2Loir+h2G+RXhJdoZhJLnrBWsuLB2r0qBRyhWuXq9w/dWxzvpP89H0UARlH6Mr9DiVj4SMtpkF/aUA==}
+    dev: false
+
+  /@tanstack/react-query/4.29.7_react-dom@18.2.0+react@18.2.0:
+    resolution: {integrity: sha512-ijBWEzAIo09fB1yd22slRZzprrZ5zMdWYzBnCg5qiXuFbH78uGN1qtGz8+Ed4MuhaPaYSD+hykn+QEKtQviEtg==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    dependencies:
+      '@tanstack/query-core': 4.29.7
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      use-sync-external-store: 1.2.0_react@18.2.0
+    dev: false
+
   /@types/json-schema/7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
     dev: true
@@ -727,6 +845,14 @@ packages:
       '@typescript-eslint/types': 5.59.6
       eslint-visitor-keys: 3.4.1
     dev: true
+
+  /@typescript/vfs/1.4.0:
+    resolution: {integrity: sha512-Pood7yv5YWMIX+yCHo176OnF8WUlKGImFG7XlsuH14Zb1YN5+dYD3uUtS7lqZtsH7tAveNUi2NzdpQCN0yRbaw==}
+    dependencies:
+      debug: 4.3.4
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
 
   /@vitejs/plugin-react/4.0.0_vite@4.3.8:
     resolution: {integrity: sha512-HX0XzMjL3hhOYm+0s95pb0Z7F8O81G7joUHgfDd/9J/ZZf5k4xX6QAMFkKsHFxaHlf6X7GD7+XuaZ66ULiJuhQ==}
@@ -901,7 +1027,6 @@ packages:
         optional: true
     dependencies:
       ms: 2.1.2
-    dev: true
 
   /deep-is/0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
@@ -1386,7 +1511,6 @@ packages:
 
   /ms/2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
-    dev: true
 
   /nanoid/3.3.6:
     resolution: {integrity: sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==}
@@ -1591,6 +1715,10 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
+  /stable-hash/0.0.3:
+    resolution: {integrity: sha512-c63fvNCQ7ip1wBfPv54MflMA5L6OE5J0p6Fg13IpKft4JAFoNal8+s/jtJ8PibrwqXm4onnbeQsADs8k0NQGUA==}
+    dev: false
+
   /strip-ansi/6.0.1:
     resolution: {integrity: sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==}
     engines: {node: '>=8'}
@@ -1659,6 +1787,12 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
+  /typescript/4.5.2:
+    resolution: {integrity: sha512-5BlMof9H1yGt0P8/WF+wPNw6GfctgGjXp5hkblpyT+8rkASSmkUKMXrxR0Xg8ThVCi/JnHQiKXeBaEwCeQwMFw==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
+    dev: false
+
   /typescript/5.0.4:
     resolution: {integrity: sha512-cW9T5W9xY37cc+jfEnaUvX91foxtHkza3Nw3wkoF4sSlKn0MONdkdEndig/qPBWXNkmplh3NzayQzCiHM4/hqw==}
     engines: {node: '>=12.20'}
@@ -1681,6 +1815,14 @@ packages:
     dependencies:
       punycode: 2.3.0
     dev: true
+
+  /use-sync-external-store/1.2.0_react@18.2.0:
+    resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /vite/4.3.8:
     resolution: {integrity: sha512-uYB8PwN7hbMrf4j1xzGDk/lqjsZvCDbt/JC5dyfxc19Pg8kRm14LinK/uq+HSLNswZEoKmweGdtpbnxRtrAXiQ==}

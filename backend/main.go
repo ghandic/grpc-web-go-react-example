@@ -4,24 +4,27 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
-	usersv1 "github.com/ghandic/grpc-web-go-react-example/backend/gen/users/v1"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
+
+	"github.com/ghandic/grpc-web-go-react-example/backend/gen/proto/users/v1/usersv1connect"
 	"github.com/ghandic/grpc-web-go-react-example/backend/users"
-	"github.com/improbable-eng/grpc-web/go/grpcweb"
-	"google.golang.org/grpc"
 )
 
 func main() {
-	gs := grpc.NewServer()
-	usersv1.RegisterUserServiceServer(gs, &users.UserService{})
-	wrappedServer := grpcweb.WrapServer(gs)
 
-	http.Handle("/api/", http.StripPrefix("/api/", wrappedServer))
+	mux := http.NewServeMux()
 
-	log.Println("Serving on http://0.0.0.0:8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		log.Fatal(err)
-	}
+	userService := &users.UserService{}
+	path, handler := usersv1connect.NewUserServiceHandler(userService)
+	mux.Handle(path, handler)
+
+	http.ListenAndServe(
+		"localhost:8080",
+		// Use h2c so we can serve HTTP/2 without TLS.
+		h2c.NewHandler(mux, &http2.Server{}),
+	)
+
 }

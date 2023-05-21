@@ -4,11 +4,12 @@ generate:
 
 .PHONY: install
 install:
-	brew install bufbuild/buf/buf
+	curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
 	go install github.com/bufbuild/buf/cmd/buf@v1.4.0
-	go install github.com/evanw/esbuild/cmd/esbuild@v0.14.38
+	go install github.com/bufbuild/connect-go/cmd/protoc-gen-connect-go@latest
+	pnpm i - g @bufbuild/protoc-gen-connect-query @bufbuild/protoc-gen-es
 	cd frontend && pnpm i
 
 .PHONY: serve
 serve:
-	cd backend && go run main.go
+	air

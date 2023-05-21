@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package users.v1;
 
+option go_package = "gen/users/v1;usersv1";
+
 message User {
   string id = 1;
   string name = 2;
@@ -10,6 +12,7 @@ message User {
 service UserService {
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
 }
 
 message GetUserRequest {
@@ -26,4 +29,10 @@ message CreateUserRequest {
 
 message CreateUserResponse {
   User user = 1;
+}
+
+message ListUsersRequest {}
+
+message ListUsersResponse {
+  repeated User users = 1;
 }

@@ -4,13 +4,19 @@ managed:
   go_package_prefix:
     default: github.com/ghandic/grpc-web-go-react-example/backend/gen
 plugins:
-  - remote: buf.build/timostamm/plugins/protobuf-ts:v2.4.0-1
-    out: ./frontend/gen/
-  - remote: buf.build/protocolbuffers/plugins/go:v1.28.0-1
+  ## Backend
+  - plugin: buf.build/protocolbuffers/go
     out: ./backend/gen
     opt:
       - paths=source_relative
-  - remote: buf.build/grpc/plugins/go:v1.2.0-1
+  - plugin: buf.build/bufbuild/connect-go
     out: ./backend/gen
     opt:
       - paths=source_relative
+  ## Frontend
+  - name: es
+    out: frontend/src/gen
+    opt: target=ts
+  - name: connect-query
+    out: frontend/src/gen
+    opt: target=ts
