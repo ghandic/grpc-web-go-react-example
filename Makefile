@@ -1,6 +1,7 @@
 .PHONY: generate
 generate:
 	buf generate
+	sqlc generate --experimental 
 
 .PHONY: install
 install:
