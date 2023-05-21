@@ -1,4 +1,4 @@
-module github.com/johanbrandhorst/grpc-web-go-react-example
+module github.com/ghandic/grpc-web-go-react-example
 
 go 1.18
 
