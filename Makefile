@@ -10,6 +10,10 @@ install:
 	pnpm i - g @bufbuild/protoc-gen-connect-query @bufbuild/protoc-gen-es
 	cd frontend && pnpm i
 
-.PHONY: serve
-serve:
+.PHONY: serve/backend
+serve/backend:
 	air
+
+.PHONY: serve/frontend
+serve/frontend:
+	cd frontend && pnpm run dev
