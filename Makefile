@@ -18,3 +18,7 @@ serve/backend:
 .PHONY: serve/frontend
 serve/frontend:
 	cd frontend && pnpm run dev
+
+.PHONY: serve/db
+serve/db:
+	docker-compose up

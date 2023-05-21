@@ -14,4 +14,5 @@
 make install
 make serve/backend
 make serve/frontend
+make serve/db
 ```
