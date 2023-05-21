@@ -15,6 +15,9 @@ require (
 	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/improbable-eng/grpc-web v0.15.0 // indirect
+	github.com/jackc/pgpassfile v1.0.0 // indirect
+	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
+	github.com/jackc/pgx/v5 v5.3.1 // indirect
 	github.com/klauspost/compress v1.11.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect

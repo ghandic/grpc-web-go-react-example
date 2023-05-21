@@ -2,21 +2,25 @@ package users
 
 import (
 	"context"
+	"fmt"
+	"os"
 
 	"sync"
 
 	"github.com/bufbuild/connect-go"
+	pgx "github.com/jackc/pgx/v5"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	v1 "github.com/ghandic/grpc-web-go-react-example/backend/gen/proto/users/v1"
 	"github.com/ghandic/grpc-web-go-react-example/backend/gen/proto/users/v1/usersv1connect"
-	"github.com/segmentio/ksuid"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	db "github.com/ghandic/grpc-web-go-react-example/backend/users/db"
 )
 
 type UserService struct {
 	usersv1connect.UnimplementedUserServiceHandler
 	mu    sync.Mutex
+	Conn  *pgx.Conn
 	users map[string]*v1.User
 }
 
@@ -43,19 +47,25 @@ func (u *UserService) CreateUser(
 	ctx context.Context,
 	req *connect.Request[v1.CreateUserRequest],
 ) (*connect.Response[v1.CreateUserResponse], error) {
+
 	if req.Msg.Name == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "missing name")
 	}
-	u.mu.Lock()
-	defer u.mu.Unlock()
+
+	q := db.New(u.Conn)
+
+	pg_user, err := q.CreateUser(ctx, req.Msg.Name)
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "GetAuthor failed: %v\n", err)
+		return nil, status.Errorf(codes.Internal, "CreateUser failed: %v\n", err)
+	}
+
 	user := &v1.User{
-		Id:   ksuid.New().String(),
-		Name: req.Msg.Name,
+		Id:   pg_user.Id,
+		Name: pg_user.Name,
 	}
-	if u.users == nil {
-		u.users = map[string]*v1.User{}
-	}
-	u.users[user.Id] = user
+
 	return connect.NewResponse(&v1.CreateUserResponse{
 		User: user,
 	}), nil
