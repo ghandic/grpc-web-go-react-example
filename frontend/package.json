@@ -13,7 +13,12 @@
     "@bufbuild/connect-query": "^0.2.1",
     "@bufbuild/connect-web": "^0.9.0",
     "@bufbuild/protobuf": "^1.2.0",
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/material": "^5.13.1",
     "@tanstack/react-query": "^4.29.7",
+    "@tanstack/react-query-devtools": "^4.29.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

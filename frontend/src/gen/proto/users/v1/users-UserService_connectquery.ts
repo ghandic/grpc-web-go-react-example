@@ -5,7 +5,7 @@
 
 import { createQueryService } from "@bufbuild/connect-query";
 import { MethodKind } from "@bufbuild/protobuf";
-import { CreateUserRequest, CreateUserResponse, GetUserRequest, GetUserResponse, ListUsersRequest, ListUsersResponse } from "./users_pb.js";
+import { CreateUserRequest, CreateUserResponse, DeleteUserRequest, DeleteUserResponse, GetUserRequest, GetUserResponse, ListUsersRequest, ListUsersResponse } from "./users_pb.js";
 
 export const typeName = "users.v1.UserService";
 
@@ -59,3 +59,20 @@ export const listUsers = createQueryService({
     typeName: "users.v1.UserService",
   },
 }).listUsers;
+
+/**
+ * @generated from rpc users.v1.UserService.DeleteUser
+ */
+export const deleteUser = createQueryService({
+  service: {
+    methods: {
+      deleteUser: {
+        name: "DeleteUser",
+        kind: MethodKind.Unary,
+        I: DeleteUserRequest,
+        O: DeleteUserResponse,
+      },
+    },
+    typeName: "users.v1.UserService",
+  },
+}).deleteUser;

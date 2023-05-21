@@ -2,7 +2,7 @@
 
 ## Plan
 
-- Scaffold React + Go gRPC
-- Connect to postgres
-- Create repository pattern
-- Create a basic CRUD frontend
+[x] Scaffold React + Go gRPC
+[x] Create a basic CRUD frontend
+[ ] Connect to postgres
+[ ] Create repository pattern

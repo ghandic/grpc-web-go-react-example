@@ -39,6 +39,8 @@ const (
 	UserServiceCreateUserProcedure = "/users.v1.UserService/CreateUser"
 	// UserServiceListUsersProcedure is the fully-qualified name of the UserService's ListUsers RPC.
 	UserServiceListUsersProcedure = "/users.v1.UserService/ListUsers"
+	// UserServiceDeleteUserProcedure is the fully-qualified name of the UserService's DeleteUser RPC.
+	UserServiceDeleteUserProcedure = "/users.v1.UserService/DeleteUser"
 )
 
 // UserServiceClient is a client for the users.v1.UserService service.
@@ -46,6 +48,7 @@ type UserServiceClient interface {
 	GetUser(context.Context, *connect_go.Request[v1.GetUserRequest]) (*connect_go.Response[v1.GetUserResponse], error)
 	CreateUser(context.Context, *connect_go.Request[v1.CreateUserRequest]) (*connect_go.Response[v1.CreateUserResponse], error)
 	ListUsers(context.Context, *connect_go.Request[v1.ListUsersRequest]) (*connect_go.Response[v1.ListUsersResponse], error)
+	DeleteUser(context.Context, *connect_go.Request[v1.DeleteUserRequest]) (*connect_go.Response[v1.DeleteUserResponse], error)
 }
 
 // NewUserServiceClient constructs a client for the users.v1.UserService service. By default, it
@@ -73,6 +76,11 @@ func NewUserServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts
 			baseURL+UserServiceListUsersProcedure,
 			opts...,
 		),
+		deleteUser: connect_go.NewClient[v1.DeleteUserRequest, v1.DeleteUserResponse](
+			httpClient,
+			baseURL+UserServiceDeleteUserProcedure,
+			opts...,
+		),
 	}
 }
 
@@ -81,6 +89,7 @@ type userServiceClient struct {
 	getUser    *connect_go.Client[v1.GetUserRequest, v1.GetUserResponse]
 	createUser *connect_go.Client[v1.CreateUserRequest, v1.CreateUserResponse]
 	listUsers  *connect_go.Client[v1.ListUsersRequest, v1.ListUsersResponse]
+	deleteUser *connect_go.Client[v1.DeleteUserRequest, v1.DeleteUserResponse]
 }
 
 // GetUser calls users.v1.UserService.GetUser.
@@ -98,11 +107,17 @@ func (c *userServiceClient) ListUsers(ctx context.Context, req *connect_go.Reque
 	return c.listUsers.CallUnary(ctx, req)
 }
 
+// DeleteUser calls users.v1.UserService.DeleteUser.
+func (c *userServiceClient) DeleteUser(ctx context.Context, req *connect_go.Request[v1.DeleteUserRequest]) (*connect_go.Response[v1.DeleteUserResponse], error) {
+	return c.deleteUser.CallUnary(ctx, req)
+}
+
 // UserServiceHandler is an implementation of the users.v1.UserService service.
 type UserServiceHandler interface {
 	GetUser(context.Context, *connect_go.Request[v1.GetUserRequest]) (*connect_go.Response[v1.GetUserResponse], error)
 	CreateUser(context.Context, *connect_go.Request[v1.CreateUserRequest]) (*connect_go.Response[v1.CreateUserResponse], error)
 	ListUsers(context.Context, *connect_go.Request[v1.ListUsersRequest]) (*connect_go.Response[v1.ListUsersResponse], error)
+	DeleteUser(context.Context, *connect_go.Request[v1.DeleteUserRequest]) (*connect_go.Response[v1.DeleteUserResponse], error)
 }
 
 // NewUserServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -127,6 +142,11 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect_go.HandlerOpt
 		svc.ListUsers,
 		opts...,
 	))
+	mux.Handle(UserServiceDeleteUserProcedure, connect_go.NewUnaryHandler(
+		UserServiceDeleteUserProcedure,
+		svc.DeleteUser,
+		opts...,
+	))
 	return "/users.v1.UserService/", mux
 }
 
@@ -143,4 +163,8 @@ func (UnimplementedUserServiceHandler) CreateUser(context.Context, *connect_go.R
 
 func (UnimplementedUserServiceHandler) ListUsers(context.Context, *connect_go.Request[v1.ListUsersRequest]) (*connect_go.Response[v1.ListUsersResponse], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("users.v1.UserService.ListUsers is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) DeleteUser(context.Context, *connect_go.Request[v1.DeleteUserRequest]) (*connect_go.Response[v1.DeleteUserResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("users.v1.UserService.DeleteUser is not implemented"))
 }

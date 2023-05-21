@@ -74,3 +74,16 @@ func (u *UserService) ListUsers(
 	}
 	return connect.NewResponse(&v1.ListUsersResponse{Users: users}), nil
 }
+
+func (u *UserService) DeleteUser(
+	ctx context.Context,
+	req *connect.Request[v1.DeleteUserRequest],
+) (*connect.Response[v1.DeleteUserResponse], error) {
+	u.mu.Lock()
+	defer u.mu.Unlock()
+
+	if _, ok := u.users[req.Msg.UserId]; ok {
+		delete(u.users, req.Msg.UserId)
+	}
+	return connect.NewResponse(&v1.DeleteUserResponse{}), nil
+}

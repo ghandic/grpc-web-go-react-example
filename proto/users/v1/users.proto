@@ -13,6 +13,7 @@ service UserService {
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
 }
 
 message GetUserRequest {
@@ -36,3 +37,9 @@ message ListUsersRequest {}
 message ListUsersResponse {
   repeated User users = 1;
 }
+
+message DeleteUserRequest {
+  string user_id = 1;
+}
+
+message DeleteUserResponse {}
