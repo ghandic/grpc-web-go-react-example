@@ -1,7 +1,7 @@
 {
   "_type": "export",
   "__export_format": 4,
-  "__export_date": "2023-05-21T07:55:09.586Z",
+  "__export_date": "2023-05-21T11:47:52.399Z",
   "__export_source": "insomnia.desktop.app:v2023.1.0",
   "resources": [
     {
@@ -77,16 +77,13 @@
     {
       "_id": "req_bd039cf3dc414a51a66ebec96ead9c6c",
       "parentId": "wrk_c4c1472c24974451876d3be4a60aaf8b",
-      "modified": 1684649804445,
+      "modified": 1684669117224,
       "created": 1684649655155,
       "url": "{{ _.userService }}GetUser",
       "name": "GetUser",
       "description": "",
       "method": "POST",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n\t\"user_id\": \"2Q5iMPGaZvzAIVPyKfyuTN5F4DS\"\n}"
-      },
+      "body": { "mimeType": "application/json", "text": "{\n\t\"user_id\": 1\n}" },
       "parameters": [],
       "headers": [
         {
@@ -110,16 +107,13 @@
     {
       "_id": "req_e816d96d509943b09a1e4d660be0f408",
       "parentId": "wrk_c4c1472c24974451876d3be4a60aaf8b",
-      "modified": 1684655675178,
+      "modified": 1684669123475,
       "created": 1684655658158,
       "url": "{{ _.userService }}DeleteUser",
       "name": "DeleteUser",
       "description": "",
       "method": "POST",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n\t\"user_id\": \"2Q5uGeYpm2DI52ogNIQJ3KqtoHi\"\n}"
-      },
+      "body": { "mimeType": "application/json", "text": "{\n\t\"user_id\": 1\n}" },
       "parameters": [],
       "headers": [
         {
