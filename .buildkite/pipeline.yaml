@@ -1,0 +1,5 @@
+steps:
+  - label: ":docker: Build docker container"
+    command :
+      - "docker build -t app ."
+      
