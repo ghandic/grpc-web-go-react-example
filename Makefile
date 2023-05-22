@@ -1,7 +1,7 @@
 .PHONY: generate
 generate:
 	buf generate
-	sqlc generate --experimental 
+	sqlc generate 
 
 .PHONY: install
 install:
@@ -23,3 +23,7 @@ serve/frontend:
 .PHONY: serve/db
 serve/db:
 	docker-compose up
+
+.PHONY: test/backend
+test/backend:
+	go test ./...
