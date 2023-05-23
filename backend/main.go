@@ -14,9 +14,13 @@ import (
 	"github.com/ghandic/grpc-web-go-react-example/backend/users"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/tracelog"
 	"github.com/rs/cors"
+	"go.uber.org/zap"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
+
+	zapadapter "github.com/jackc/pgx-zap"
 )
 
 func newCORS() *cors.Cors {
@@ -59,12 +63,19 @@ func newCORS() *cors.Cors {
 }
 
 func getPGPool() *pgxpool.Pool {
-	conf, err := pgxpool.ParseConfig("postgres://postgres:postgres@localhost:5432/postgres")
+	config, err := pgxpool.ParseConfig("postgres://postgres:postgres@localhost:5432/postgres")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
 	}
-	pool, err := pgxpool.NewWithConfig(context.Background(), conf)
+	logger, err := zap.NewDevelopmentConfig().Build()
+
+	config.ConnConfig.Tracer = &tracelog.TraceLog{
+		Logger:   zapadapter.NewLogger(logger),
+		LogLevel: tracelog.LogLevelTrace,
+	}
+
+	pool, err := pgxpool.NewWithConfig(context.Background(), config)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -85,10 +96,12 @@ func main() {
 	path, handler := usersv1connect.NewUserServiceHandler(userService)
 	mux.Handle(path, handler)
 
-	http.ListenAndServe(
+	err := http.ListenAndServe(
 		"localhost:8080",
 		// Use h2c so we can serve HTTP/2 without TLS.
 		h2c.NewHandler(newCORS().Handler(mux), &http2.Server{}),
 	)
+	fmt.Fprintf(os.Stderr, "Unable to start server: %v\n", err)
+	os.Exit(1)
 
 }

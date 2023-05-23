@@ -1,10 +1,12 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { FC, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { listUsers, createUser, deleteUser } from './gen/proto/users/v1/users-UserService_connectquery';
-import { ListUsersResponse, User, CreateUserResponse, CreateUserRequest, DeleteUserRequest, DeleteUserResponse } from './gen/proto/users/v1/users_pb';
+import { SortDirection, User, ListUsersRequest } from './gen/proto/users/v1/users_pb';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TransportProvider } from '@bufbuild/connect-query';
 import { createConnectTransport } from '@bufbuild/connect-web';
+import { DataGrid, GridColDef, GridRenderCellParams, GridSortModel, GridToolbar } from '@mui/x-data-grid';
+
 import {
   Button,
   Dialog,
@@ -25,6 +27,7 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { PartialMessage } from '@bufbuild/protobuf';
 
 const AddUser = () => {
   const [open, setOpen] = useState(false);
@@ -32,12 +35,13 @@ const AddUser = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const { mutate } = useMutation<CreateUserResponse, Error, CreateUserRequest>({
+  const { mutate } = useMutation({
     ...createUser.useMutation(),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['users.v1.UserService', 'ListUsers'],
       });
+      setName("")
       handleClose()
     },
   });
@@ -79,9 +83,22 @@ const AddUser = () => {
   );
 }
 
-const UserList = ({ users }: {users: User[]}) => {
 
-  const { mutate } = useMutation<DeleteUserResponse, Error, DeleteUserRequest>({
+const UserList = () => {
+  const [queryOptions, setQueryOptions] = useState<PartialMessage<ListUsersRequest>>({
+    offset: 0,
+    pageSize: 5,
+    sorting: undefined,
+    query: {
+      text: ""
+    }
+  });
+
+  const { data, isLoading } = useQuery(
+    // listUsers.useQuery({ sorting: { field: 'created_at', direction: SortDirection.ASC } })
+    listUsers.useQuery(queryOptions)
+  );
+  const { mutate } = useMutation({
     ...deleteUser.useMutation(),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -90,44 +107,93 @@ const UserList = ({ users }: {users: User[]}) => {
     },
   });
 
-  if (users.length === 0) return <Typography>No users in db yet...</Typography>;
-  
-  return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell align="right">Delete</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {users.map((user) => (
-            <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-              <TableCell>{user.id}</TableCell>
-              <TableCell>{user.name}</TableCell>
-              <TableCell align="right">
-                <IconButton aria-label="delete" size="small" onClick={()=>{mutate({userId: user.id})}}>
-                  <DeleteIcon fontSize="inherit" />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+  // Some API clients return undefined while loading
+  // Following lines are here to prevent `rowCountState` from being undefined during the loading
+  const [rowCountState, setRowCountState] = useState(data?.total || 0);
+  useEffect(() => {
+    setRowCountState((prevRowCountState) => (data?.total !== undefined ? data?.total : prevRowCountState));
+  }, [data?.total, setRowCountState]);
+
+  const handleSortModelChange = useCallback(
+    (sortModel: GridSortModel) => {
+      if (sortModel.length > 0) {
+        setQueryOptions({
+          ...queryOptions,
+          sorting: { field: sortModel[0].field, direction: sortModel[0].sort?.toUpperCase() as unknown as SortDirection },
+        });
+      } else {
+        setQueryOptions({ ...queryOptions, sorting: undefined });
+      }
+    },
+    [queryOptions]
   );
+
+  console.log(queryOptions);
+
+  const columns: GridColDef[] = [
+    { field: 'id', headerName: 'ID'},
+    { field: 'name', headerName: 'Name', flex: 1 },
+    {
+      field: 'delete_action',
+      headerName: 'Delete',
+      sortable: false,
+      renderCell: (params: GridRenderCellParams<User>) => (
+        <IconButton
+          aria-label="delete"
+          size="small"
+          onClick={() => {
+            mutate({ userId: params.row.id });
+          }}
+        >
+          <DeleteIcon fontSize="inherit" />
+        </IconButton>
+      ),
+    },
+  ];
+
+
+  return (
+    <div style={{ width: 1000, marginTop: 30 }}>
+      <TextField
+      sx={{ marginBottom: "10px" }}
+        margin="dense"
+        id="search"
+        label="Search"
+        variant="standard"
+        value={queryOptions.query?.text}
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+          setQueryOptions({...queryOptions, query: {...queryOptions.query, text:event.target.value}});
+        }}
+      />
+      <DataGrid
+        columns={columns}
+        rows={data?.users || []}
+        rowCount={Number(rowCountState)}
+        loading={isLoading}
+        pageSizeOptions={[5, 10]}
+        paginationModel={{ page: queryOptions.offset as number, pageSize: queryOptions.pageSize as number }}
+        paginationMode="server"
+        onPaginationModelChange={(newPagination) =>
+          setQueryOptions({ ...queryOptions, pageSize: newPagination.pageSize, offset: newPagination.page })
+        }
+        sortingMode="server"
+        onSortModelChange={handleSortModelChange}
+        disableColumnFilter
+        disableColumnSelector
+        disableDensitySelector
+        autoHeight
+      />
+    </div>
+  );
+
 };
 
 const UserManagement: FC = () => {
-  const { data: users, isSuccess } = useQuery<ListUsersResponse, Error>(listUsers.useQuery({}));
-  if (!isSuccess) return <div>Fail...</div>
-
+  
   return (
     <div>
       <AddUser />
-      <UserList users={users.users} />
+      <UserList />
     </div>
   );
 };
