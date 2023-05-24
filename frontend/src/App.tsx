@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TransportProvider } from '@bufbuild/connect-query';
 import { createConnectTransport } from '@bufbuild/connect-web';
 import {
+  Alert,
   Button,
   Dialog,
   DialogTitle,
@@ -28,11 +29,19 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const AddUser = () => {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [name, setName] = useState<string | undefined>(undefined);
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [showError, setShowError] = useState(false);
 
-  const { mutate } = useMutation<CreateUserResponse, Error, CreateUserRequest>({
+  const handleOpen = () => setOpen(true);
+
+  const handleClose = () => {
+    setName(undefined);
+    setError(undefined);
+    setOpen(false);
+  }
+
+  const createUserMutation = useMutation<CreateUserResponse, Error, CreateUserRequest>({
     ...createUser.useMutation(),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -40,7 +49,25 @@ const AddUser = () => {
       });
       handleClose()
     },
+    onError: (error: Error) => {
+      error ? setError(error.message) : null;
+      setShowError(true);
+      window.setTimeout(() => {
+        setShowError(false);
+      }, 5000);
+    }
   });
+
+  const handleCreateUser = () => {
+    if(!name) {
+      return
+    }
+
+    const payload = {
+      name: name
+    }
+    createUserMutation.mutate(payload);
+  }
 
   return (
     <div>
@@ -66,22 +93,27 @@ const AddUser = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button
-            onClick={() => {
-              mutate({name: name});
-            }}
-          >
+          <Button onClick={handleCreateUser}>
             Add User
           </Button>
         </DialogActions>
       </Dialog>
+      {showError && (
+        <div className="position-fixed bottom-0 p-3 z-index-2">
+          <Alert severity="error">
+            {error ? `${error}` : 'Error adding user.'}
+          </Alert>
+        </div>
+      )}
     </div>
   );
 }
 
 const UserList = ({ users }: {users: User[]}) => {
 
-  const { mutate } = useMutation<DeleteUserResponse, Error, DeleteUserRequest>({
+  if (users.length === 0) return <Typography>No users in db yet...</Typography>;
+
+  const deleteUserMutation  = useMutation<DeleteUserResponse, Error, DeleteUserRequest>({
     ...deleteUser.useMutation(),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -90,7 +122,12 @@ const UserList = ({ users }: {users: User[]}) => {
     },
   });
 
-  if (users.length === 0) return <Typography>No users in db yet...</Typography>;
+  const handleDeleteUser = (userId) => {
+    const payload = {
+      userId: userId
+    }
+    deleteUserMutation.mutate(payload);
+  }
   
   return (
     <TableContainer component={Paper}>
@@ -108,7 +145,7 @@ const UserList = ({ users }: {users: User[]}) => {
               <TableCell>{user.id}</TableCell>
               <TableCell>{user.name}</TableCell>
               <TableCell align="right">
-                <IconButton aria-label="delete" size="small" onClick={()=>{mutate({userId: user.id})}}>
+                <IconButton aria-label="delete" size="small" onClick={()=>{handleDeleteUser(user.id)}}>
                   <DeleteIcon fontSize="inherit" />
                 </IconButton>
               </TableCell>
@@ -136,6 +173,7 @@ const queryClient = new QueryClient();
 
 const App: FC = () => {
 
+  /*TODO Fetch from env variables */
   const transport = createConnectTransport({
     baseUrl: 'http://127.0.0.1:8080',
   });
