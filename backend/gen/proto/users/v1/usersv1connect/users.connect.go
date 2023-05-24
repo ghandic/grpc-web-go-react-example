@@ -6,9 +6,9 @@ package usersv1connect
 
 import (
 	context "context"
+	v1 "github.com/ghandic/grpc-web-go-react-example/backend/gen/proto/users/v1"
 	errors "errors"
 	connect_go "github.com/bufbuild/connect-go"
-	v1 "github.com/ghandic/grpc-web-go-react-example/backend/gen/proto/users/v1"
 	http "net/http"
 	strings "strings"
 )

@@ -4,7 +4,33 @@
 // @ts-nocheck
 
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
-import { Message, proto3 } from "@bufbuild/protobuf";
+import { Message, proto3, protoInt64 } from "@bufbuild/protobuf";
+
+/**
+ * @generated from enum users.v1.SortDirection
+ */
+export enum SortDirection {
+  /**
+   * @generated from enum value: SORT_DIRECTION_UNSPECIFIED = 0;
+   */
+  SORT_DIRECTION_UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: DESC = 1;
+   */
+  DESC = 1,
+
+  /**
+   * @generated from enum value: ASC = 2;
+   */
+  ASC = 2,
+}
+// Retrieve enum metadata with: proto3.getEnumType(SortDirection)
+proto3.util.setEnumType(SortDirection, "users.v1.SortDirection", [
+  { no: 0, name: "SORT_DIRECTION_UNSPECIFIED" },
+  { no: 1, name: "DESC" },
+  { no: 2, name: "ASC" },
+]);
 
 /**
  * @generated from message users.v1.User
@@ -198,9 +224,72 @@ export class CreateUserResponse extends Message<CreateUserResponse> {
 }
 
 /**
+ * @generated from message users.v1.Sorting
+ */
+export class Sorting extends Message<Sorting> {
+  /**
+   * @generated from field: string field = 1;
+   */
+  field = "";
+
+  /**
+   * @generated from field: users.v1.SortDirection direction = 2;
+   */
+  direction = SortDirection.SORT_DIRECTION_UNSPECIFIED;
+
+  constructor(data?: PartialMessage<Sorting>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "users.v1.Sorting";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "field", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "direction", kind: "enum", T: proto3.getEnumType(SortDirection) },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Sorting {
+    return new Sorting().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Sorting {
+    return new Sorting().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Sorting {
+    return new Sorting().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: Sorting | PlainMessage<Sorting> | undefined, b: Sorting | PlainMessage<Sorting> | undefined): boolean {
+    return proto3.util.equals(Sorting, a, b);
+  }
+}
+
+/**
  * @generated from message users.v1.ListUsersRequest
  */
 export class ListUsersRequest extends Message<ListUsersRequest> {
+  /**
+   * @generated from field: int32 page_size = 1;
+   */
+  pageSize = 0;
+
+  /**
+   * @generated from field: users.v1.Sorting sorting = 2;
+   */
+  sorting?: Sorting;
+
+  /**
+   * @generated from field: users.v1.ListUsersRequest.ListUsersQuery query = 3;
+   */
+  query?: ListUsersRequest_ListUsersQuery;
+
+  /**
+   * @generated from field: int32 offset = 4;
+   */
+  offset = 0;
+
   constructor(data?: PartialMessage<ListUsersRequest>) {
     super();
     proto3.util.initPartial(data, this);
@@ -209,6 +298,10 @@ export class ListUsersRequest extends Message<ListUsersRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "users.v1.ListUsersRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "page_size", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 2, name: "sorting", kind: "message", T: Sorting },
+    { no: 3, name: "query", kind: "message", T: ListUsersRequest_ListUsersQuery },
+    { no: 4, name: "offset", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListUsersRequest {
@@ -229,6 +322,51 @@ export class ListUsersRequest extends Message<ListUsersRequest> {
 }
 
 /**
+ * This can be expanded to add explicit queries
+ *
+ * @generated from message users.v1.ListUsersRequest.ListUsersQuery
+ */
+export class ListUsersRequest_ListUsersQuery extends Message<ListUsersRequest_ListUsersQuery> {
+  /**
+   * @generated from field: string text = 1;
+   */
+  text = "";
+
+  /**
+   * @generated from field: repeated string user_ids = 2;
+   */
+  userIds: string[] = [];
+
+  constructor(data?: PartialMessage<ListUsersRequest_ListUsersQuery>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "users.v1.ListUsersRequest.ListUsersQuery";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "user_ids", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListUsersRequest_ListUsersQuery {
+    return new ListUsersRequest_ListUsersQuery().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListUsersRequest_ListUsersQuery {
+    return new ListUsersRequest_ListUsersQuery().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListUsersRequest_ListUsersQuery {
+    return new ListUsersRequest_ListUsersQuery().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ListUsersRequest_ListUsersQuery | PlainMessage<ListUsersRequest_ListUsersQuery> | undefined, b: ListUsersRequest_ListUsersQuery | PlainMessage<ListUsersRequest_ListUsersQuery> | undefined): boolean {
+    return proto3.util.equals(ListUsersRequest_ListUsersQuery, a, b);
+  }
+}
+
+/**
  * @generated from message users.v1.ListUsersResponse
  */
 export class ListUsersResponse extends Message<ListUsersResponse> {
@@ -236,6 +374,16 @@ export class ListUsersResponse extends Message<ListUsersResponse> {
    * @generated from field: repeated users.v1.User users = 1;
    */
   users: User[] = [];
+
+  /**
+   * @generated from field: string next_page_token = 2;
+   */
+  nextPageToken = "";
+
+  /**
+   * @generated from field: int64 total = 3;
+   */
+  total = protoInt64.zero;
 
   constructor(data?: PartialMessage<ListUsersResponse>) {
     super();
@@ -246,6 +394,8 @@ export class ListUsersResponse extends Message<ListUsersResponse> {
   static readonly typeName = "users.v1.ListUsersResponse";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "users", kind: "message", T: User, repeated: true },
+    { no: 2, name: "next_page_token", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "total", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListUsersResponse {

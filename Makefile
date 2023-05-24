@@ -1,7 +1,7 @@
 .PHONY: generate
 generate:
 	buf generate
-	sqlc generate 
+	cd backend && sqlc generate 
 
 .PHONY: install
 install:
