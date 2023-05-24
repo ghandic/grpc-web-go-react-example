@@ -140,7 +140,7 @@
       "modified": 1684649620492,
       "created": 1684649033521,
       "name": "Base Environment",
-      "data": { "domain": "http://localhost:8080", "userService": "{{ _.domain }}/users.v1.UserService/" },
+      "data": { "domain": "http://backend:8080", "userService": "{{ _.domain }}/users.v1.UserService/" },
       "dataPropertyOrder": { "&": ["domain", "userService"] },
       "color": null,
       "isPrivate": false,

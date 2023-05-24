@@ -59,7 +59,7 @@ func newCORS() *cors.Cors {
 }
 
 func getPGPool() *pgxpool.Pool {
-	conf, err := pgxpool.ParseConfig("postgres://postgres:postgres@localhost:5432/postgres")
+	conf, err := pgxpool.ParseConfig("postgres://postgres:postgres@db:5432/postgres")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -86,7 +86,7 @@ func main() {
 	mux.Handle(path, handler)
 
 	http.ListenAndServe(
-		"localhost:8080",
+		"backend:8080",
 		// Use h2c so we can serve HTTP/2 without TLS.
 		h2c.NewHandler(newCORS().Handler(mux), &http2.Server{}),
 	)

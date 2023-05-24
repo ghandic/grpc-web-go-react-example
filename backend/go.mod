@@ -1,4 +1,4 @@
-module github.com/ghandic/grpc-web-go-react-example
+module github.com/ghandic/grpc-web-go-react-example/backend
 
 go 1.20
 

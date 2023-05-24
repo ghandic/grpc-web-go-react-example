@@ -1,0 +1,9 @@
+version: v1
+plugins:
+  ## Frontend
+  - name: es
+    out: ./src/gen
+    opt: target=ts
+  - name: connect-query
+    out: ./src/gen
+    opt: target=ts
