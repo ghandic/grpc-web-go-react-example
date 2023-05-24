@@ -85,10 +85,12 @@ func main() {
 	path, handler := usersv1connect.NewUserServiceHandler(userService)
 	mux.Handle(path, handler)
 
-	http.ListenAndServe(
-		"backend:8080",
+	err := http.ListenAndServe(
+		"0.0.0.0:8080",
 		// Use h2c so we can serve HTTP/2 without TLS.
 		h2c.NewHandler(newCORS().Handler(mux), &http2.Server{}),
 	)
+	fmt.Fprintf(os.Stderr, "Unable to start server: %v\n", err)
+	os.Exit(1)
 
 }

@@ -137,7 +137,7 @@ const queryClient = new QueryClient();
 const App: FC = () => {
 
   const transport = createConnectTransport({
-    baseUrl: 'http://backend:8080',
+    baseUrl: 'http://localhost:8080',
   });
 
   return (

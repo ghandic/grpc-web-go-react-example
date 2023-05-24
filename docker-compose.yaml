@@ -26,12 +26,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - '8080:8080'
-    command : air -c .air.toml -d
+    command : go run main.go
 volumes:
   db:
     driver: local
 
-networks:
-  grpcnet:
-    name: grpcnet
-    external: true
