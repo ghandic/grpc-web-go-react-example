@@ -8,21 +8,14 @@ import { createConnectTransport } from '@bufbuild/connect-web';
 import { DataGrid, GridColDef, GridRenderCellParams, GridSortModel, GridToolbar } from '@mui/x-data-grid';
 
 import {
+  Alert,
   Button,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
   DialogActions,
-  Typography,
   IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   TextField,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -31,20 +24,45 @@ import { PartialMessage } from '@bufbuild/protobuf';
 
 const AddUser = () => {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [name, setName] = useState<string | undefined>(undefined);
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [showError, setShowError] = useState(false);
 
-  const { mutate } = useMutation({
+  const handleOpen = () => setOpen(true);
+
+  const handleClose = () => {
+    setName(undefined);
+    setError(undefined);
+    setOpen(false);
+  }
+
+  const createUserMutation = useMutation({
     ...createUser.useMutation(),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['users.v1.UserService', 'ListUsers'],
       });
-      setName("")
       handleClose()
     },
+    onError: (error: Error) => {
+      error ? setError(error.message) : null;
+      setShowError(true);
+      window.setTimeout(() => {
+        setShowError(false);
+      }, 5000);
+    }
   });
+
+  const handleCreateUser = () => {
+    if(!name) {
+      return
+    }
+
+    const payload = {
+      name: name
+    }
+    createUserMutation.mutate(payload);
+  }
 
   return (
     <div>
@@ -70,15 +88,18 @@ const AddUser = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button
-            onClick={() => {
-              mutate({name: name});
-            }}
-          >
+          <Button onClick={handleCreateUser}>
             Add User
           </Button>
         </DialogActions>
       </Dialog>
+      {showError && (
+        <div className="position-fixed bottom-0 p-3 z-index-2">
+          <Alert severity="error">
+            {error ? `${error}` : 'Error adding user.'}
+          </Alert>
+        </div>
+      )}
     </div>
   );
 }
@@ -98,7 +119,8 @@ const UserList = () => {
     // listUsers.useQuery({ sorting: { field: 'created_at', direction: SortDirection.ASC } })
     listUsers.useQuery(queryOptions)
   );
-  const { mutate } = useMutation({
+
+  const deleteUserMutation  = useMutation({
     ...deleteUser.useMutation(),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -106,6 +128,13 @@ const UserList = () => {
       });
     },
   });
+
+  const handleDeleteUser = (userId) => {
+    const payload = {
+      userId: userId
+    }
+    deleteUserMutation.mutate(payload);
+  }
 
   // Some API clients return undefined while loading
   // Following lines are here to prevent `rowCountState` from being undefined during the loading
@@ -128,8 +157,6 @@ const UserList = () => {
     [queryOptions]
   );
 
-  console.log(queryOptions);
-
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID'},
     { field: 'name', headerName: 'Name', flex: 1 },
@@ -141,9 +168,7 @@ const UserList = () => {
         <IconButton
           aria-label="delete"
           size="small"
-          onClick={() => {
-            mutate({ userId: params.row.id });
-          }}
+          onClick={(params)=> {handleDeleteUser(params.row.id)}}
         >
           <DeleteIcon fontSize="inherit" />
         </IconButton>
@@ -184,12 +209,11 @@ const UserList = () => {
         autoHeight
       />
     </div>
-  );
-
+  )
 };
 
 const UserManagement: FC = () => {
-  
+
   return (
     <div>
       <AddUser />
@@ -202,6 +226,7 @@ const queryClient = new QueryClient();
 
 const App: FC = () => {
 
+  /*TODO Fetch from env variables */
   const transport = createConnectTransport({
     baseUrl: 'http://127.0.0.1:8080',
   });
