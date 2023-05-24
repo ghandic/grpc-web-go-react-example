@@ -15,15 +15,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Typography,
   IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   TextField,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -44,7 +36,7 @@ const AddUser = () => {
     setOpen(false);
   }
 
-  const createUserMutation = useMutation<CreateUserResponse, Error, CreateUserRequest>({
+  const createUserMutation = useMutation({
     ...createUser.useMutation(),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -127,10 +119,8 @@ const UserList = () => {
     // listUsers.useQuery({ sorting: { field: 'created_at', direction: SortDirection.ASC } })
     listUsers.useQuery(queryOptions)
   );
-  const { mutate } = useMutation({
-  if (users.length === 0) return <Typography>No users in db yet...</Typography>;
 
-  const deleteUserMutation  = useMutation<DeleteUserResponse, Error, DeleteUserRequest>({
+  const deleteUserMutation  = useMutation({
     ...deleteUser.useMutation(),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -138,6 +128,13 @@ const UserList = () => {
       });
     },
   });
+
+  const handleDeleteUser = (userId) => {
+    const payload = {
+      userId: userId
+    }
+    deleteUserMutation.mutate(payload);
+  }
 
   // Some API clients return undefined while loading
   // Following lines are here to prevent `rowCountState` from being undefined during the loading
@@ -160,8 +157,6 @@ const UserList = () => {
     [queryOptions]
   );
 
-  console.log(queryOptions);
-
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID'},
     { field: 'name', headerName: 'Name', flex: 1 },
@@ -173,9 +168,7 @@ const UserList = () => {
         <IconButton
           aria-label="delete"
           size="small"
-          onClick={() => {
-            mutate({ userId: params.row.id });
-          }}
+          onClick={(params)=> {handleDeleteUser(params.row.id)}}
         >
           <DeleteIcon fontSize="inherit" />
         </IconButton>
@@ -216,40 +209,7 @@ const UserList = () => {
         autoHeight
       />
     </div>
-  const handleDeleteUser = (userId) => {
-    const payload = {
-      userId: userId
-    }
-    deleteUserMutation.mutate(payload);
-  }
-
-  return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell align="right">Delete</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {users.map((user) => (
-            <TableRow key={user.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-              <TableCell>{user.id}</TableCell>
-              <TableCell>{user.name}</TableCell>
-              <TableCell align="right">
-                <IconButton aria-label="delete" size="small" onClick={()=>{handleDeleteUser(user.id)}}>
-                  <DeleteIcon fontSize="inherit" />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-
+  )
 };
 
 const UserManagement: FC = () => {
