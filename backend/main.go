@@ -13,8 +13,11 @@ import (
 	"github.com/ghandic/grpc-web-go-react-example/backend/gen/proto/users/v1/usersv1connect"
 	"github.com/ghandic/grpc-web-go-react-example/backend/users"
 
+	zapadapter "github.com/jackc/pgx-zap"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/tracelog"
 	"github.com/rs/cors"
+	"go.uber.org/zap"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 )
@@ -59,12 +62,21 @@ func newCORS() *cors.Cors {
 }
 
 func getPGPool() *pgxpool.Pool {
-	conf, err := pgxpool.ParseConfig("postgres://postgres:postgres@db:5432/postgres")
+	config, err := pgxpool.ParseConfig("postgres://postgres:postgres@db:5432/postgres")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
 	}
-	pool, err := pgxpool.NewWithConfig(context.Background(), conf)
+
+	logger, err := zap.NewDevelopmentConfig().Build()
+
+	config.ConnConfig.Tracer = &tracelog.TraceLog{
+		Logger:   zapadapter.NewLogger(logger),
+		LogLevel: tracelog.LogLevelTrace,
+	}
+
+	pool, err := pgxpool.NewWithConfig(context.Background(), config)
+
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)

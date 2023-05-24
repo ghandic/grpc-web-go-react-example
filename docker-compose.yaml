@@ -19,6 +19,9 @@ services:
     ports:
       - '5173:5173'
     command: npm run dev  -- --host #-d
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
 
   backend:
     build: 
@@ -26,7 +29,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - '8080:8080'
-    command : go run main.go
+    command : air
+    volumes:
+      - ./backend:/app
 volumes:
   db:
     driver: local
