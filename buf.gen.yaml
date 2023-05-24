@@ -15,8 +15,9 @@ plugins:
       - paths=source_relative
   ## Frontend
   - name: es
-    out: frontend/src/gen
+    out: ./frontend/src/gen
     opt: target=ts
   - name: connect-query
-    out: frontend/src/gen
+    out: ./frontend/src/gen
     opt: target=ts
+

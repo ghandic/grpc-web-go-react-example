@@ -12,6 +12,27 @@ services:
     volumes: 
       - db:/var/lib/postgresql/data
       - ./backend/schema.sql:/docker-entrypoint-initdb.d/create_tables.sql
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - '5173:5173'
+    command: npm run dev  -- --host #-d
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    command : air
+    volumes:
+      - ./backend:/app
 volumes:
   db:
     driver: local
+

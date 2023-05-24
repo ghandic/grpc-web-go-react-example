@@ -1,11 +1,11 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, FC, useCallback, useEffect, useState } from 'react';
 import { listUsers, createUser, deleteUser } from './gen/proto/users/v1/users-UserService_connectquery';
 import { SortDirection, User, ListUsersRequest } from './gen/proto/users/v1/users_pb';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TransportProvider } from '@bufbuild/connect-query';
 import { createConnectTransport } from '@bufbuild/connect-web';
-import { DataGrid, GridColDef, GridRenderCellParams, GridSortModel, GridToolbar } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRenderCellParams, GridSortModel, GridPaginationModel } from '@mui/x-data-grid';
 
 import {
   Alert,
@@ -36,13 +36,13 @@ const AddUser = () => {
     setOpen(false);
   }
 
-  const createUserMutation = useMutation({
+  const { mutate: createUserMutation } = useMutation({
     ...createUser.useMutation(),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['users.v1.UserService', 'ListUsers'],
       });
-      handleClose()
+      handleClose();
     },
     onError: (error: Error) => {
       error ? setError(error.message) : null;
@@ -50,7 +50,7 @@ const AddUser = () => {
       window.setTimeout(() => {
         setShowError(false);
       }, 5000);
-    }
+    },
   });
 
   const handleCreateUser = () => {
@@ -61,7 +61,7 @@ const AddUser = () => {
     const payload = {
       name: name
     }
-    createUserMutation.mutate(payload);
+    createUserMutation(payload);
   }
 
   return (
@@ -81,7 +81,7 @@ const AddUser = () => {
             fullWidth
             variant="standard"
             value={name}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
               setName(event.target.value);
             }}
           />
@@ -120,7 +120,7 @@ const UserList = () => {
     listUsers.useQuery(queryOptions)
   );
 
-  const deleteUserMutation  = useMutation({
+  const { mutate: deleteUserMutation }  = useMutation({
     ...deleteUser.useMutation(),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -129,18 +129,17 @@ const UserList = () => {
     },
   });
 
-  const handleDeleteUser = (userId) => {
-    const payload = {
-      userId: userId
-    }
-    deleteUserMutation.mutate(payload);
+  const handleDeleteUser = (userId: number) => {
+    deleteUserMutation({
+      userId: userId,
+    });
   }
 
   // Some API clients return undefined while loading
   // Following lines are here to prevent `rowCountState` from being undefined during the loading
-  const [rowCountState, setRowCountState] = useState(data?.total || 0);
+  const [rowCountState, setRowCountState] = useState<number>(data?.total || 0);
   useEffect(() => {
-    setRowCountState((prevRowCountState) => (data?.total !== undefined ? data?.total : prevRowCountState));
+    setRowCountState((prevRowCountState: number) => (data?.total !== undefined ? data?.total : prevRowCountState));
   }, [data?.total, setRowCountState]);
 
   const handleSortModelChange = useCallback(
@@ -168,7 +167,7 @@ const UserList = () => {
         <IconButton
           aria-label="delete"
           size="small"
-          onClick={() => handleDeleteUser(params.row.id)}
+          onClick={()=> handleDeleteUser(params.row.id)}
         >
           <DeleteIcon fontSize="inherit" />
         </IconButton>
@@ -180,14 +179,14 @@ const UserList = () => {
   return (
     <div style={{ width: 1000, marginTop: 30 }}>
       <TextField
-      sx={{ marginBottom: "10px" }}
+        sx={{ marginBottom: '10px' }}
         margin="dense"
         id="search"
         label="Search"
         variant="standard"
         value={queryOptions.query?.text}
-        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-          setQueryOptions({...queryOptions, query: {...queryOptions.query, text:event.target.value}});
+        onChange={(event: ChangeEvent<HTMLInputElement>) => {
+          setQueryOptions({ ...queryOptions, query: { ...queryOptions.query, text: event.target.value } });
         }}
       />
       <DataGrid
@@ -198,7 +197,7 @@ const UserList = () => {
         pageSizeOptions={[5, 10]}
         paginationModel={{ page: queryOptions.offset as number, pageSize: queryOptions.pageSize as number }}
         paginationMode="server"
-        onPaginationModelChange={(newPagination) =>
+        onPaginationModelChange={(newPagination: GridPaginationModel) =>
           setQueryOptions({ ...queryOptions, pageSize: newPagination.pageSize, offset: newPagination.page })
         }
         sortingMode="server"
@@ -209,7 +208,7 @@ const UserList = () => {
         autoHeight
       />
     </div>
-  )
+  );
 };
 
 const UserManagement: FC = () => {
@@ -228,7 +227,7 @@ const App: FC = () => {
 
   /*TODO Fetch from env variables */
   const transport = createConnectTransport({
-    baseUrl: 'http://127.0.0.1:8080',
+    baseUrl: 'http://localhost:8080',
   });
 
   return (
