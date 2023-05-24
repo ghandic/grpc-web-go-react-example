@@ -6,18 +6,18 @@ managed:
 plugins:
   ## Backend
   - plugin: buf.build/protocolbuffers/go
-    out: ./gen
+    out: ./backend/gen
     opt:
       - paths=source_relative
   - plugin: buf.build/bufbuild/connect-go
-    out: ./gen
+    out: ./backend/gen
     opt:
       - paths=source_relative
   ## Frontend
   - name: es
-    out: ./src/gen
+    out: ./src/frontend/gen
     opt: target=ts
   - name: connect-query
-    out: ./src/gen
+    out: ./src/frontend/gen
     opt: target=ts
 
