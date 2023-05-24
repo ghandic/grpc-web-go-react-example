@@ -1,5 +1,6 @@
 steps:
-  - label: ":docker: Build docker container"
+  - label: ":docker: Build docker container and deploy"
     command :
-      - "docker build -t app ."
-      
+      - "if ! docker version; then echo \"Docker not installed, exiting...\"; fi"
+      - "if ! docker-compose versio; then echo \"Docker-compose not installed, exiting...\"; fi"
+      - "docker-compose up --build -d"
