@@ -32,10 +32,35 @@ message CreateUserResponse {
   User user = 1;
 }
 
-message ListUsersRequest {}
+enum SortDirection {
+    SORT_DIRECTION_UNSPECIFIED = 0;
+    DESC = 1;
+    ASC = 2;
+}
+
+message Sorting {
+    string field = 1;
+    SortDirection direction = 2;
+}
+
+message ListUsersRequest {
+
+  // This can be expanded to add explicit queries
+  message ListUsersQuery {
+      string text = 1;
+      repeated string user_ids = 2;
+  }
+  
+  int32 page_size = 1;
+  Sorting sorting = 2;
+  ListUsersQuery query = 3;
+  int32 offset = 4;
+}
 
 message ListUsersResponse {
   repeated User users = 1;
+  string next_page_token = 2;
+  int64 total = 3;
 }
 
 message DeleteUserRequest {

@@ -2,13 +2,16 @@ package users
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/bufbuild/connect-go"
 	v1 "github.com/ghandic/grpc-web-go-react-example/backend/gen/proto/users/v1"
 	"github.com/ghandic/grpc-web-go-react-example/backend/gen/proto/users/v1/usersv1connect"
+
+	"github.com/bufbuild/connect-go"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -78,19 +81,86 @@ func PGUsersToUsers(pg_users []User) []*v1.User {
 	return acc
 }
 
+func getListParams(req *v1.ListUsersRequest) (*GetUsersParams, error) {
+	listParams := &GetUsersParams{}
+	if req.Sorting != nil {
+		switch req.Sorting.Field {
+		case "name":
+			switch req.Sorting.Direction {
+			case v1.SortDirection_ASC:
+				listParams.NameAsc = true
+			case v1.SortDirection_DESC:
+				listParams.NameDesc = true
+			default:
+				return listParams, errors.New("Invalid sort by direction")
+			}
+		case "id":
+			switch req.Sorting.Direction {
+			case v1.SortDirection_ASC:
+				listParams.IDAsc = true
+			case v1.SortDirection_DESC:
+				listParams.IDDesc = true
+			default:
+				return listParams, errors.New("Invalid sort by direction")
+			}
+		case "created_at":
+			switch req.Sorting.Direction {
+			case v1.SortDirection_ASC:
+				listParams.CreatedAtAsc = true
+			case v1.SortDirection_DESC:
+				listParams.CreatedAtDesc = true
+			default:
+				return listParams, errors.New("Invalid sort by direction")
+			}
+		default:
+			return listParams, errors.New("Invalid field")
+		}
+	}
+
+	if req.Query != nil {
+		if req.Query.Text != "" {
+			listParams.Search = req.Query.Text
+		}
+	}
+
+	if req.PageSize > 0 {
+		listParams.LimitAmount = req.PageSize
+	}
+
+	if req.Offset >= 0 {
+		listParams.OffsetAmount = req.Offset
+	}
+
+	return listParams, nil
+
+}
+
 func (u *UserService) ListUsers(
 	ctx context.Context,
 	req *connect.Request[v1.ListUsersRequest],
 ) (*connect.Response[v1.ListUsersResponse], error) {
 	q := New(u.Pool)
 
-	pg_users, err := q.ListUsers(ctx)
+	listParams, err := getListParams(req.Msg)
+	fmt.Println(listParams)
+
+	pg_users, err := q.GetUsers(ctx, *listParams)
 
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "ListUsers failed: %v\n", err)
+		return nil, status.Errorf(codes.Internal, "GetUsers failed: %v\n", err)
 	}
 
-	return connect.NewResponse(&v1.ListUsersResponse{Users: PGUsersToUsers(pg_users)}), nil
+	search := ""
+	if req.Msg.Query != nil {
+		search = req.Msg.Query.Text
+	}
+	total_count, err := q.GetUsersCount(ctx, search)
+
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "GetUsersCount failed: %v\n", err)
+	}
+
+	return connect.NewResponse(&v1.ListUsersResponse{Users: PGUsersToUsers(pg_users), Total: total_count}), nil
 }
 
 func (u *UserService) DeleteUser(

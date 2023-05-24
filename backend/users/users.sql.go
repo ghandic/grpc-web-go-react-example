@@ -52,14 +52,46 @@ func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 	return i, err
 }
 
-const listUsers = `-- name: ListUsers :many
+const getUsers = `-- name: GetUsers :many
 SELECT id, name, created_at
 FROM users
-ORDER BY created_at DESC
+WHERE 
+    (CASE WHEN $1 <> '' THEN name ILIKE CONCAT('%', $1, '%') ELSE TRUE END)
+ORDER BY 
+    CASE WHEN $2::bool THEN created_at END asc,
+    CASE WHEN $3::bool THEN created_at END desc,
+    CASE WHEN $4::bool THEN id END asc,
+    CASE WHEN $5::bool THEN id END desc,
+    CASE WHEN $6::bool THEN name END asc,
+    CASE WHEN $7::bool THEN name END desc
+OFFSET NULLIF($8::int, 0)
+LIMIT NULLIF($9::int, 0)
 `
 
-func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
-	rows, err := q.db.Query(ctx, listUsers)
+type GetUsersParams struct {
+	Search        interface{}
+	CreatedAtAsc  bool
+	CreatedAtDesc bool
+	IDAsc         bool
+	IDDesc        bool
+	NameAsc       bool
+	NameDesc      bool
+	OffsetAmount  int32
+	LimitAmount   int32
+}
+
+func (q *Queries) GetUsers(ctx context.Context, arg GetUsersParams) ([]User, error) {
+	rows, err := q.db.Query(ctx, getUsers,
+		arg.Search,
+		arg.CreatedAtAsc,
+		arg.CreatedAtDesc,
+		arg.IDAsc,
+		arg.IDDesc,
+		arg.NameAsc,
+		arg.NameDesc,
+		arg.OffsetAmount,
+		arg.LimitAmount,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -76,4 +108,18 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const getUsersCount = `-- name: GetUsersCount :one
+SELECT COUNT(*)
+FROM users
+WHERE 
+    (CASE WHEN $1 <> '' THEN name ILIKE CONCAT('%', $1, '%') ELSE TRUE END)
+`
+
+func (q *Queries) GetUsersCount(ctx context.Context, search interface{}) (int64, error) {
+	row := q.db.QueryRow(ctx, getUsersCount, search)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
 }

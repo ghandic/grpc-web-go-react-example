@@ -1,11 +1,11 @@
 .PHONY: generate
 generate:
 	buf generate
-	sqlc generate 
+	cd backend && sqlc generate 
 
 .PHONY: install
 install:
-	curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+	go install github.com/cosmtrek/air@latest
 	go install github.com/bufbuild/buf/cmd/buf@v1.4.0
 	go install github.com/bufbuild/connect-go/cmd/protoc-gen-connect-go@latest
 	go install github.com/kyleconroy/sqlc/cmd/sqlc@latest
