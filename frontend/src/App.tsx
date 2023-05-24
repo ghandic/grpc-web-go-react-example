@@ -167,7 +167,7 @@ const UserList = () => {
         <IconButton
           aria-label="delete"
           size="small"
-          onClick={()=> {handleDeleteUser(params.row.id)}}
+          onClick={()=> handleDeleteUser(params.row.id)}
         >
           <DeleteIcon fontSize="inherit" />
         </IconButton>
