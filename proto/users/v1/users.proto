@@ -50,7 +50,6 @@ message ListUsersRequest {
       string text = 1;
       repeated string user_ids = 2;
   }
-
   int32 page_size = 1;
   Sorting sorting = 2;
   ListUsersQuery query = 3;
