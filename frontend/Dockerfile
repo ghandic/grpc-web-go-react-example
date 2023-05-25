@@ -1,14 +1,15 @@
 FROM node
 
-RUN apt-get update && \
-    apt-get install ca-certificates 
 WORKDIR /app
 
+RUN npm i -g pnpm
 COPY package.json /app
 COPY pnpm-lock.yaml /app
-RUN	cd /app && npm install
+RUN	pnpm i - g @bufbuild/protoc-gen-connect-query @bufbuild/protoc-gen-es
+
+RUN	cd /app && pnpm install
 
 COPY . /app
 
 EXPOSE 5173
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["pnpm", "run", "dev", "--", "--host"]
