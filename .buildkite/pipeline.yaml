@@ -1,6 +1,7 @@
 steps:
-  - label: ":docker: Build docker container and deploy"
+  - label: ":docker: Build docker containers"
     command :
-      - "if ! docker version; then echo \"Docker not installed, exiting...\"; fi"
-      - "if ! docker-compose versio; then echo \"Docker-compose not installed, exiting...\"; fi"
-      - "docker-compose up --build -d"
+      - "if ! docker version; then echo \"Docker not installed, exiting...\"; exit 1; fi"
+      - "if ! docker-compose version; then echo \"Docker-compose not installed, exiting...\"; exit 1; fi"
+      - "reponame=$$(basename $$(git remote get-url origin) | cut -d. -f1)"
+      - "for i in backend frontend; do cd $$i; docker build -t $$reponame-$$i . ; cd ..; done "

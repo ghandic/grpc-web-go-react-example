@@ -18,18 +18,17 @@ services:
       dockerfile: Dockerfile
     ports:
       - '5173:5173'
-    command: npm run dev  -- --host #-d
+    command: pnpm run dev  -- --host #-d
     volumes:
       - ./frontend:/app
       - /app/node_modules
-
   backend:
     build: 
       context: ./backend
       dockerfile: Dockerfile
     ports:
       - '8080:8080'
-    command : air
+    command : air -c .air.toml
     volumes:
       - ./backend:/app
 volumes:
