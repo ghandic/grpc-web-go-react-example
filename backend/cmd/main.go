@@ -6,13 +6,15 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/ghandic/grpc-web-go-react-example/backend/internal/users/adapters/controllers"
+	"github.com/ghandic/grpc-web-go-react-example/backend/internal/users/services"
+	"github.com/ghandic/grpc-web-go-react-example/backend/internal/users/usecases"
 	"net/http"
 	"os"
 	"time"
 
-	"github.com/ghandic/grpc-web-go-react-example/backend/gen/proto/users/v1/usersv1connect"
-	"github.com/ghandic/grpc-web-go-react-example/backend/users"
-
+	"github.com/ghandic/grpc-web-go-react-example/backend/api/proto/users/v1/usersv1connect"
+	handler "github.com/ghandic/grpc-web-go-react-example/backend/internal/users/adapters/repositories"
 	zapadapter "github.com/jackc/pgx-zap"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/tracelog"
@@ -85,16 +87,18 @@ func getPGPool() *pgxpool.Pool {
 }
 
 func main() {
-
 	mux := http.NewServeMux()
 
 	pool := getPGPool()
 	defer pool.Close()
 
-	userService := &users.UserService{
-		Pool: pool,
-	}
-	path, handler := usersv1connect.NewUserServiceHandler(userService)
+	userRepository := handler.NewUserRepository(pool)
+	userService := services.NewUserService(userRepository)
+	userUsecases := usecases.NewUserUsecases(userService)
+	userHandler := controllers.NewUserHandler(userUsecases)
+
+	path, handler := usersv1connect.NewUserServiceHandler(*userHandler)
+
 	mux.Handle(path, handler)
 
 	err := http.ListenAndServe(

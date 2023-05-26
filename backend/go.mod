@@ -1,10 +1,11 @@
 module github.com/ghandic/grpc-web-go-react-example/backend
 
-go 1.20
+go 1.19
 
 require google.golang.org/grpc v1.55.0
 
 require (
+	github.com/bufbuild/connect-query v0.0.0-20230524161048-5553f604af2b // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect

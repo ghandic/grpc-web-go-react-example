@@ -2,15 +2,15 @@ version: v1
 managed:
   enabled: true
   go_package_prefix:
-    default: github.com/ghandic/grpc-web-go-react-example/backend/gen
+    default: github.com/ghandic/grpc-web-go-react-example/backend/api
 plugins:
   ## Backend
-  - plugin: buf.build/protocolbuffers/go
-    out: ./backend/gen
+  - remote: buf.build/protocolbuffers/plugins/go
+    out: ./backend/api
     opt:
       - paths=source_relative
-  - plugin: buf.build/bufbuild/connect-go
-    out: ./backend/gen
+  - remote: buf.build/bufbuild/plugins/connect-go
+    out: ./backend/api
     opt:
       - paths=source_relative
   ## Frontend
