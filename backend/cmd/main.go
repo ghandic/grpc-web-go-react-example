@@ -6,12 +6,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/ghandic/grpc-web-go-react-example/backend/internal/users/adapters/controllers"
-	"github.com/ghandic/grpc-web-go-react-example/backend/internal/users/services"
-	"github.com/ghandic/grpc-web-go-react-example/backend/internal/users/usecases"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/ghandic/grpc-web-go-react-example/backend/internal/users/adapters/controllers"
+	"github.com/ghandic/grpc-web-go-react-example/backend/internal/users/services"
+	"github.com/ghandic/grpc-web-go-react-example/backend/internal/users/usecases"
 
 	"github.com/ghandic/grpc-web-go-react-example/backend/api/proto/users/v1/usersv1connect"
 	handler "github.com/ghandic/grpc-web-go-react-example/backend/internal/users/adapters/repositories"
@@ -97,9 +98,9 @@ func main() {
 	userUsecases := usecases.NewUserUsecases(userService)
 	userHandler := controllers.NewUserHandler(userUsecases)
 
-	path, handler := usersv1connect.NewUserServiceHandler(*userHandler)
+	p, h := usersv1connect.NewUserServiceHandler(userHandler)
 
-	mux.Handle(path, handler)
+	mux.Handle(p, h)
 
 	err := http.ListenAndServe(
 		"0.0.0.0:8080",

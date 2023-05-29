@@ -2,8 +2,6 @@ package repositories
 
 import (
 	"context"
-	"github.com/ghandic/grpc-web-go-react-example/backend/api/proto/users/v1/usersv1connect"
-
 	v1 "github.com/ghandic/grpc-web-go-react-example/backend/api/proto/users/v1"
 	"github.com/ghandic/grpc-web-go-react-example/backend/db/users"
 	"github.com/ghandic/grpc-web-go-react-example/backend/internal/users/domain"
@@ -14,7 +12,6 @@ import (
 )
 
 type UserRepository struct {
-	usersv1connect.UnimplementedUserServiceHandler
 	Pool *pgxpool.Pool
 }
 
@@ -77,12 +74,13 @@ func (u *UserRepository) ListUsers(
 	if req.Query != nil {
 		search = req.Query.Text
 	}
+
 	totalCount, err := q.GetUsersCount(ctx, search)
 
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "GetUsersCount failed: %v\n", err)
 	}
-
+	
 	return &domain.ListUsersResponse{Users: &pgUsers, TotalCount: totalCount}, nil
 }
 
