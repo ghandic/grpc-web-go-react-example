@@ -12,11 +12,12 @@ import (
 )
 
 type UserRepository struct {
-	Pool *pgxpool.Pool
+	Pool    *pgxpool.Pool
+	Queries *users.Queries
 }
 
 func NewUserRepository(pool *pgxpool.Pool) *UserRepository {
-	return &UserRepository{Pool: pool}
+	return &UserRepository{Pool: pool, Queries: users.New(pool)}
 }
 
 func (u *UserRepository) CreateUser(ctx context.Context, Name string) (*users.User, error) {
@@ -25,9 +26,7 @@ func (u *UserRepository) CreateUser(ctx context.Context, Name string) (*users.Us
 		return nil, status.Errorf(codes.InvalidArgument, "missing name")
 	}
 
-	q := users.New(u.Pool)
-
-	pgUser, err := q.AddUser(ctx, Name)
+	pgUser, err := u.Queries.AddUser(ctx, Name)
 
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "CreateUser failed: %v\n", err)
@@ -41,9 +40,7 @@ func (u *UserRepository) GetUser(
 	userId int32,
 ) (*users.User, error) {
 
-	q := users.New(u.Pool)
-
-	pgUser, err := q.GetUser(ctx, userId)
+	pgUser, err := u.Queries.GetUser(ctx, userId)
 
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -60,11 +57,10 @@ func (u *UserRepository) ListUsers(
 	ctx context.Context,
 	req *v1.ListUsersRequest,
 ) (*domain.ListUsersResponse, error) {
-	q := users.New(u.Pool)
 
 	listParams, err := getListParams(req)
 
-	pgUsers, err := q.GetUsers(ctx, *listParams)
+	pgUsers, err := u.Queries.GetUsers(ctx, *listParams)
 
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "GetUsers failed: %v\n", err)
@@ -75,12 +71,12 @@ func (u *UserRepository) ListUsers(
 		search = req.Query.Text
 	}
 
-	totalCount, err := q.GetUsersCount(ctx, search)
+	totalCount, err := u.Queries.GetUsersCount(ctx, search)
 
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "GetUsersCount failed: %v\n", err)
 	}
-	
+
 	return &domain.ListUsersResponse{Users: &pgUsers, TotalCount: totalCount}, nil
 }
 
@@ -88,9 +84,8 @@ func (u *UserRepository) DeleteUser(
 	ctx context.Context,
 	userId int32,
 ) (bool, error) {
-	q := users.New(u.Pool)
 
-	err := q.DeleteUser(ctx, userId)
+	err := u.Queries.DeleteUser(ctx, userId)
 
 	if err != nil {
 		return false, status.Errorf(codes.Internal, "DeleteUser failed: %v\n", err)
