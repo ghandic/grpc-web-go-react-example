@@ -8,7 +8,7 @@ import (
 	context "context"
 	errors "errors"
 	connect_go "github.com/bufbuild/connect-go"
-	v1 "github.com/ghandic/grpc-web-go-react-example/backend/gen/proto/users/v1"
+	v1 "github.com/ghandic/grpc-web-go-react-example/backend/api/proto/users/v1"
 	http "net/http"
 	strings "strings"
 )
@@ -23,24 +23,6 @@ const _ = connect_go.IsAtLeastVersion0_1_0
 const (
 	// UserServiceName is the fully-qualified name of the UserService service.
 	UserServiceName = "users.v1.UserService"
-)
-
-// These constants are the fully-qualified names of the RPCs defined in this package. They're
-// exposed at runtime as Spec.Procedure and as the final two segments of the HTTP route.
-//
-// Note that these are different from the fully-qualified method names used by
-// google.golang.org/protobuf/reflect/protoreflect. To convert from these constants to
-// reflection-formatted method names, remove the leading slash and convert the remaining slash to a
-// period.
-const (
-	// UserServiceGetUserProcedure is the fully-qualified name of the UserService's GetUser RPC.
-	UserServiceGetUserProcedure = "/users.v1.UserService/GetUser"
-	// UserServiceCreateUserProcedure is the fully-qualified name of the UserService's CreateUser RPC.
-	UserServiceCreateUserProcedure = "/users.v1.UserService/CreateUser"
-	// UserServiceListUsersProcedure is the fully-qualified name of the UserService's ListUsers RPC.
-	UserServiceListUsersProcedure = "/users.v1.UserService/ListUsers"
-	// UserServiceDeleteUserProcedure is the fully-qualified name of the UserService's DeleteUser RPC.
-	UserServiceDeleteUserProcedure = "/users.v1.UserService/DeleteUser"
 )
 
 // UserServiceClient is a client for the users.v1.UserService service.
@@ -63,22 +45,22 @@ func NewUserServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts
 	return &userServiceClient{
 		getUser: connect_go.NewClient[v1.GetUserRequest, v1.GetUserResponse](
 			httpClient,
-			baseURL+UserServiceGetUserProcedure,
+			baseURL+"/users.v1.UserService/GetUser",
 			opts...,
 		),
 		createUser: connect_go.NewClient[v1.CreateUserRequest, v1.CreateUserResponse](
 			httpClient,
-			baseURL+UserServiceCreateUserProcedure,
+			baseURL+"/users.v1.UserService/CreateUser",
 			opts...,
 		),
 		listUsers: connect_go.NewClient[v1.ListUsersRequest, v1.ListUsersResponse](
 			httpClient,
-			baseURL+UserServiceListUsersProcedure,
+			baseURL+"/users.v1.UserService/ListUsers",
 			opts...,
 		),
 		deleteUser: connect_go.NewClient[v1.DeleteUserRequest, v1.DeleteUserResponse](
 			httpClient,
-			baseURL+UserServiceDeleteUserProcedure,
+			baseURL+"/users.v1.UserService/DeleteUser",
 			opts...,
 		),
 	}
@@ -127,23 +109,23 @@ type UserServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewUserServiceHandler(svc UserServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	mux.Handle(UserServiceGetUserProcedure, connect_go.NewUnaryHandler(
-		UserServiceGetUserProcedure,
+	mux.Handle("/users.v1.UserService/GetUser", connect_go.NewUnaryHandler(
+		"/users.v1.UserService/GetUser",
 		svc.GetUser,
 		opts...,
 	))
-	mux.Handle(UserServiceCreateUserProcedure, connect_go.NewUnaryHandler(
-		UserServiceCreateUserProcedure,
+	mux.Handle("/users.v1.UserService/CreateUser", connect_go.NewUnaryHandler(
+		"/users.v1.UserService/CreateUser",
 		svc.CreateUser,
 		opts...,
 	))
-	mux.Handle(UserServiceListUsersProcedure, connect_go.NewUnaryHandler(
-		UserServiceListUsersProcedure,
+	mux.Handle("/users.v1.UserService/ListUsers", connect_go.NewUnaryHandler(
+		"/users.v1.UserService/ListUsers",
 		svc.ListUsers,
 		opts...,
 	))
-	mux.Handle(UserServiceDeleteUserProcedure, connect_go.NewUnaryHandler(
-		UserServiceDeleteUserProcedure,
+	mux.Handle("/users.v1.UserService/DeleteUser", connect_go.NewUnaryHandler(
+		"/users.v1.UserService/DeleteUser",
 		svc.DeleteUser,
 		opts...,
 	))
